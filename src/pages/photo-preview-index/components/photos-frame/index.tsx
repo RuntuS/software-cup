@@ -1,5 +1,6 @@
 import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { StyleAllContent, StyleBody, StyleHeader } from './style';
 
 type Props = {};
 
@@ -16,15 +17,17 @@ const PREVIEW_MAP: {
 
 export const PhotoFrame: React.FC<Props> = (props) => {
   const params = useParams();
-  const location = useLocation();
-
-  console.log('local', location);
 
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
 
-  console.log(title);
+  return title ? (
+    <StyleAllContent>
+      <StyleHeader>{title}</StyleHeader>
 
-  console.log(params);
-  return <div>ss</div>;
+      <StyleBody>图片放置处</StyleBody>
+    </StyleAllContent>
+  ) : (
+    <span>404 not found</span>
+  );
 };

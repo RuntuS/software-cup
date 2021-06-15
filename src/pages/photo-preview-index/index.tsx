@@ -1,13 +1,7 @@
 import { DashBoard } from '@/components/dashboard';
 import { Sidebar } from '@/components/sidebar';
 import React, { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  // eslint-disable-next-line prettier/prettier
-  useHistory
-} from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { PhotoFrame } from './components/photos-frame';
 import './index.css';
 import { StyleBody, StyleHeader } from './style';
@@ -41,23 +35,11 @@ export const PhotoPreview: React.FC<Props> = (props) => {
             history.push(`/index/${e}`);
           }}
         />
-        <Router>
-          <Switch>
-            <Route
-              exact
-              path={[
-                '/index/all-photo',
-                '/index/recent',
-                '/index/album',
-                '/index/people',
-                '/index/placement',
-                '/index/things',
-              ]}
-            >
-              <PhotoFrame />
-            </Route>
-          </Switch>
-        </Router>
+        <Switch>
+          <Route path={['/index/:current']} exact>
+            <PhotoFrame />
+          </Route>
+        </Switch>
       </StyleBody>
     </div>
   );

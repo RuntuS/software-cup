@@ -1,5 +1,6 @@
 import { Menu } from 'antd';
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { StyleSidebarBox } from './style';
 
 const { SubMenu, Item } = Menu;
@@ -10,6 +11,7 @@ type Props = {
 
 export const Sidebar: React.FC<Props> = (props: Props) => {
   const { onChoose, className } = props;
+  const params = useParams() as { current: string };
 
   return (
     <StyleSidebarBox className={className}>
@@ -19,6 +21,7 @@ export const Sidebar: React.FC<Props> = (props: Props) => {
           onChoose(obj.key);
         }}
         defaultOpenKeys={['photo', 'albumTitle']}
+        defaultSelectedKeys={params ? [params.current] : ['']}
       >
         <SubMenu key="photo" title="照片">
           <Item key="all-photo">全部照片</Item>
