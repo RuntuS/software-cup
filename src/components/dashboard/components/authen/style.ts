@@ -1,5 +1,5 @@
-import Style from 'styled-components'
+import Style from 'styled-components';
 
 export const StyleAuthenInfoBox = Style.div`
     
-`
+`;
