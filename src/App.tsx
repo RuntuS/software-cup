@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  // eslint-disable-next-line prettier/prettier
   Switch
 } from 'react-router-dom';
 import './App.css';
