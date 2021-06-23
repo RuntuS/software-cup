@@ -3,25 +3,18 @@ import { Sidebar } from '@/components/sidebar';
 import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { PhotoFrame } from './components/photos-frame';
+import { Button } from 'antd'
+import { FolderAddOutlined } from '@ant-design/icons'
 import './index.css';
 import { StyleBody, StyleHeader } from './style';
 
 type Props = {};
 
-const PREVIEW_MAP: {
-  [key: string]: string;
-} = {
-  'all-photo': '全部照片',
-  recent: '最近图片',
-  album: '相册',
-  people: '人物',
-  placement: '地点',
-  things: '事件',
-};
-
 export const PhotoPreview: React.FC<Props> = (props) => {
   const [displayKey, setDisplayKey] = useState('allPhoto');
   const history = useHistory();
+
+  let screenHeight = document.body.scrollHeight;
 
   return (
     <div>
@@ -29,12 +22,18 @@ export const PhotoPreview: React.FC<Props> = (props) => {
         <DashBoard />
       </StyleHeader>
       <StyleBody>
-        <Sidebar
-          onChoose={(e) => {
-            setDisplayKey(e);
-            history.push(`/index/${e}`);
-          }}
-        />
+        <div className="sideBarBox" style={{height: screenHeight - 72}}>
+          <Sidebar
+            className="sideBar"
+            onChoose={(e) => {
+              setDisplayKey(e);
+              history.push(`/index/${e}`);
+            }}
+          />
+          <Button type="link" className="createAlbum" icon={<FolderAddOutlined />} size="large">
+            新建相册
+          </Button>
+        </div>
         <Switch>
           <Route path={['/index/:current']} exact>
             <PhotoFrame />

@@ -14,15 +14,16 @@ export const Photo: React.FC<Props> = (props) => {
     const {id, url, onIdChange, onVisChange, desc = '无备注'} = props
     return (
         <StylePhotoBox 
+            key={id}
             onClick={() => {
                 onIdChange(id)
                 // 延迟0.5s，让id先更新
                 setTimeout(() => {
                     onVisChange(true)
-                },500)
+                })
             }}
         >
-            <figure className={'imghvr-push-up'}>
+            <figure className={'imghvr-push-up imgBox'}>
                 <img src={url} alt="图片加载失败，请重试"/>
                 <figcaption>
                     {desc}
