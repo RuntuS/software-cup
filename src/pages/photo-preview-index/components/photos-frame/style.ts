@@ -33,6 +33,11 @@ export const StyleHeader = Style.div`
         margin-right: 36px;
         margin-top: 2px;
     }
+
+    .cancel {
+        margin-left: 24px;
+        margin-right: 36px;
+    }
 `;
 
 export const StyleBody = Style.div`
@@ -41,3 +46,9 @@ export const StyleBody = Style.div`
     flex-wrap: wrap;
     width: 100%;
 `;
+
+export const StylePhotoCheck = Style.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`

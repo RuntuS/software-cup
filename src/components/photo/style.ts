@@ -12,4 +12,5 @@ export const StylePhotoBox = Style.div`
     .imgBox:hover {
         cursor: pointer;
     }
+
 `
