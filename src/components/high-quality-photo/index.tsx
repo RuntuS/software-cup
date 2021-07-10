@@ -1,5 +1,6 @@
-import React from 'react'
-import { Image } from 'antd'
+import { DetailPhoto, requestDetail } from '@/axios/photo'
+import { Image, Tag } from 'antd'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StyleHighQualityImage } from './style'
 
 type Props = {
@@ -12,17 +13,53 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
     console.log(id)
 
 
+    const [detail, setDetail] = useState<DetailPhoto>({
+        fileId: 0,
+        title: '',
+        imgUrl: '',
+        height: '',
+        width: '',
+        uploadTime: '',
+        categories: []
+    })
+    const requestDetailLocal = useCallback(() => {
+        requestDetail('2018091609025',id,false)
+        .then(res => {
+            setDetail(res)
+        })
+        .catch(err => {
+            console.error(err)
+        })
+    }, [id])
+
+    useEffect(() => {
+        requestDetailLocal()
+    }, [requestDetailLocal])
+
+    console.log(detail)
+
+
     return (
         <StyleHighQualityImage>
             <div>
                 <Image 
-                    src="https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png"
+                    src={detail.imgUrl}
                     className={"image"}
                     alt="预览"
                 />
             </div>
-            <div className={'descption'}>
-                {"图片详细信息放这里"}
+            <div className={'descrption'}>
+                <div className={"title"}>{detail.title}</div>
+                <div className={'uploadTime'}>
+                    <span>上传时间: </span>
+                    <span>{detail.uploadTime}</span>
+                </div>
+                <div className={'tag'}>
+                    {detail.categories.map(item => (
+                        <Tag color="cyan">{item}</Tag>
+                    ))}
+                </div>
+                
             </div>
         </StyleHighQualityImage>
     )

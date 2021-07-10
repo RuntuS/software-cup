@@ -14,13 +14,13 @@ function App() {
     <Router>
       <Switch>
         <Route path={['/index']} exact>
-          <Redirect to="/index/all-photo" />
+          <Redirect to="/index/0" />
         </Route>
         <Route path={['/index/:current', '/index']} exact>
           <PhotoPreview />
         </Route>
         <Route path="*">
-          <Redirect to="/index/all-photo" />
+          <Redirect to="/index/0" />
         </Route>
       </Switch>
     </Router>

@@ -1,4 +1,4 @@
-import Style, { css } from 'styled-components'
+import Style from 'styled-components'
 
 export const StyleHighQualityImage = Style.div`
     .image{
@@ -10,4 +10,25 @@ export const StyleHighQualityImage = Style.div`
     display: flex;
     jusitify-content: space-around;
 
+    .uploadTime {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .descrption {
+        margin-left: 12px;
+        dispaly: flex;
+        flex-direction: column;
+    }
+
+    .title {
+        font-size: 20px;
+        font-weight: 500;
+    }
+
+    .tag {
+        margin-top: 12px;
+    }
 `

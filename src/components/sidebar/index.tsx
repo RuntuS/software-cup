@@ -28,10 +28,8 @@ export const Sidebar: React.FC<Props> = (props: Props) => {
           <Item key="recent">最近上传</Item>
         </SubMenu>
         <SubMenu key="albumTitle" title="相册">
-          <Item key="album">相册</Item>
-          <Item key="people">人物</Item>
-          <Item key="placement">地点</Item>
-          <Item key="things">事件</Item>
+          <Item key="0">事务</Item>
+          <Item key="1">风景</Item>
         </SubMenu>
       </Menu>
     </StyleSidebarBox>

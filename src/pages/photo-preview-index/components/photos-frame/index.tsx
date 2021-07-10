@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
-import { useParams, useLocation } from 'react-router-dom';
-import { Modal, Pagination, Button, Upload, Checkbox } from 'antd'
-import { Photo } from '@/components/photo'
-import { Album } from '@/components/album'
-import { UploadOutlined } from '@ant-design/icons'
-import { HighQualityPhoto } from '@/components/high-quality-photo'
-import { StyleAllContent, StyleBody, StyleHeader, StylePhotoCheck } from './style'
+import { Album as IAlbum, requestAlbum } from '@/axios/album';
+import { Photo as IPhoto, requestPhotos } from '@/axios/photo';
+import { Album } from '@/components/album';
+import { HighQualityPhoto } from '@/components/high-quality-photo';
+import { Photo } from '@/components/photo';
+import { UploadOutlined } from '@ant-design/icons';
+import { Button, Modal, Pagination, Upload } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
+import { StyleAllContent, StyleBody, StyleHeader } from './style';
 
 type Props = {};
 
@@ -14,10 +16,8 @@ const PREVIEW_MAP: {
 } = {
   'all-photo': '全部照片',
   recent: '最近图片',
-  album: '相册',
-  people: '人物',
-  placement: '地点',
-  things: '事件',
+  "0": '事务',
+  "1": '风景',
 };
 
 const MOCK_URLS: Array<{
@@ -85,8 +85,14 @@ const MOCK_URLS: Array<{
 ]
 
 export const PhotoFrame: React.FC<Props> = (props) => {
-  const params = useParams();
+  const params: {current: string} = useParams();
   const urlObj = useLocation();
+
+
+  const isAlbum = !urlObj.search
+
+  console.log(urlObj.search)
+
   const [vis, setVis] = useState(false)
   const [choosedId, setChoosedId] = useState('')
   
@@ -98,13 +104,47 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const screenHeight = window.screen.availHeight
 
-  // TODO lhl 这里去请求数据
-  console.log('最外层的obj', urlObj)
 
 
+  const [albums, setAlbums] = useState<Array<IAlbum>>([])
+  const [photos, setPhotos] = useState<Array<IPhoto>>([])
+
+  const requestAlbumLocal = useCallback(() => {
+    const currentParam = params ? params.current : '0'
+    // hard code
+    requestAlbum('2018091609025',currentParam , true)
+      .then(res => {
+        console.log('res', res)
+        setAlbums(res)
+
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  },[params])
+
+  const requestPhotosLocal = useCallback(() => {
+    const key = urlObj.search.split('=')[1]
+    requestPhotos('2018091609025', key, current, 10)
+      .then(res => {
+        console.log(res)
+        setPhotos(res)
+      })
+      .catch(err => {
+        console.error(err)
+      })
+  },[current, urlObj.search])
 
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
+
+  useEffect(() => {
+    if(isAlbum){
+      requestAlbumLocal()
+    } else {
+      requestPhotosLocal()
+    }
+  }, [isAlbum, requestAlbumLocal, requestPhotosLocal])
 
   return title ? (
     <StyleAllContent>
@@ -159,30 +199,26 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       </Modal>
       <StyleBody>
         {
-        MOCK_URLS.map(item => !item.isAlbum ? (
-        <StylePhotoCheck>
-          <Photo
-          id={item.id}
-          url={item.url}
-          onIdChange={(id) => setChoosedId(id)}
-          onVisChange={(vis) => setVis(vis)}
-          desc={item.desc}  
-          />
-          {
-          !!isEdit &&
-          (<Checkbox> 选择 </Checkbox>)
-          }
-        </StylePhotoCheck>
-        )
+          isAlbum ? 
+            albums.map(item => (
+              <Album
+                id={item.title}
+                title={item.title}
+                url={item.imgUrl}
+                number={item.number}
+              />
+            ))
           :
-          <Album
-            id={item.id}
-            title={item.desc}
-            url={item.url}
-            number={item.number}
-          />
-        )
-      }
+          photos.map(item => (
+            <Photo
+              id={item.fileId}
+              url={item.imgUrl}
+              desc={item.fileName}
+              onIdChange={(id) => {setChoosedId(id)}}
+              onVisChange={(vis) => {setVis(vis)}}
+            />
+          ))
+        }
       </StyleBody>
       <Pagination
         className="pagin"

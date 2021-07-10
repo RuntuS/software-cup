@@ -1,10 +1,10 @@
 import { DashBoard } from '@/components/dashboard';
 import { Sidebar } from '@/components/sidebar';
+import { FolderAddOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import React, { useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { PhotoFrame } from './components/photos-frame';
-import { Button } from 'antd'
-import { FolderAddOutlined } from '@ant-design/icons'
 import './index.css';
 import { StyleBody, StyleHeader } from './style';
 
