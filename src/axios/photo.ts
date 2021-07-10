@@ -7,7 +7,7 @@ export type Photo = {
 }
 
 export type DetailPhoto = {
-    fileId: number,
+    fileId: string,
     title: string,
     imgUrl: string,
     height: string,

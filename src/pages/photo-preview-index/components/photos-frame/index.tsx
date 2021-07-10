@@ -4,10 +4,10 @@ import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
 import { Photo } from '@/components/photo';
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Modal, Pagination, Upload } from 'antd';
+import { Button, Checkbox, Modal, Pagination, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { StyleAllContent, StyleBody, StyleHeader } from './style';
+import { StyleAllContent, StyleBody, StyleHeader, StylePhotoCheck } from './style';
 
 type Props = {};
 
@@ -19,70 +19,6 @@ const PREVIEW_MAP: {
   "0": '事务',
   "1": '风景',
 };
-
-const MOCK_URLS: Array<{
-  id: string,
-  url: string,
-  isAlbum : boolean,
-  desc: string,
-  number ?: number,
-}> = [
-  {
-    id: '1',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello1'
-  },
-  {
-    id: '2',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello2'
-  },
-  {
-    id: '3',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello3'
-  },
-  {
-    id: '4',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello4'
-  },
-  {
-    id: '5',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello5'
-  },
-  {
-    id: '6',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello6'
-  },
-  {
-    id: '7',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello7'
-  },
-  {
-    id: '8',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: false,
-    desc: 'hello8'
-  },
-  {
-    id: '9',
-    url: 'https://lao-lan-go.oss-cn-beijing.aliyuncs.com/software-2021/pixiv32.png',
-    isAlbum: true,
-    desc: 'hello9',
-    number: 10
-  }
-]
 
 export const PhotoFrame: React.FC<Props> = (props) => {
   const params: {current: string} = useParams();
@@ -102,9 +38,11 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const [wonderfulIds, setWonderfulIds] = useState<Array<string>>([])
 
+
   const screenHeight = window.screen.availHeight
 
 
+  console.log(wonderfulIds)
 
   const [albums, setAlbums] = useState<Array<IAlbum>>([])
   const [photos, setPhotos] = useState<Array<IPhoto>>([])
@@ -210,13 +148,46 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             ))
           :
           photos.map(item => (
-            <Photo
-              id={item.fileId}
-              url={item.imgUrl}
-              desc={item.fileName}
-              onIdChange={(id) => {setChoosedId(id)}}
-              onVisChange={(vis) => {setVis(vis)}}
-            />
+            <StylePhotoCheck>
+              <Photo
+                id={item.fileId}
+                url={item.imgUrl}
+                desc={item.fileName}
+                onIdChange={(id) => {setChoosedId(id)}}
+                onVisChange={(vis) => {setVis(vis)}}
+              />
+              {
+                isEdit && 
+                (
+                  <Checkbox
+                    disabled={!isEdit}
+                    id={item.fileId}
+                    onChange={(e) => {
+                      console.log(e.target)
+                      if(e.target.checked) {
+                        setWonderfulIds((pre) => {
+                          const arr = [...pre]
+                          arr.push(e.target.id as unknown as string)
+                          return arr
+                        })
+                      } else {
+                        setWonderfulIds((pre) => {
+                          const newArray = pre.filter(item => {
+                            if(item === e.target.id) {
+                              return false
+                            } else {
+                              return true
+                            }
+                          })
+                          return newArray
+                        })
+                      }
+                    }}
+                  >选择</Checkbox>
+                )
+              }
+            </StylePhotoCheck>
+
           ))
         }
       </StyleBody>

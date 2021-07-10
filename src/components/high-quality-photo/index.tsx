@@ -14,7 +14,7 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
 
 
     const [detail, setDetail] = useState<DetailPhoto>({
-        fileId: 0,
+        fileId: '0',
         title: '',
         imgUrl: '',
         height: '',

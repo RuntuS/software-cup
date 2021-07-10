@@ -7,10 +7,18 @@ export const StylePhotoBox = Style.div`
     .imgBox {
         width: 150px;
         height: 200px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        img {
+           transform: scale(3);
+        }
     }
 
     .imgBox:hover {
         cursor: pointer;
     }
+
 
 `

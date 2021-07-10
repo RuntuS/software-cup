@@ -9,6 +9,13 @@ export const StyleImageBox = Style.div`
         width: 150px;
         height: 200px;
         filter: opacity(75%);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+
+        img {
+            transform: scale(3);
+        }
     }
 
     .imgBox:hover {

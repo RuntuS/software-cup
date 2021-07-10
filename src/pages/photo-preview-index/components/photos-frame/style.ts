@@ -45,6 +45,7 @@ export const StyleBody = Style.div`
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+
 `;
 
 export const StylePhotoCheck = Style.div`
