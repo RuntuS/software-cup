@@ -7,6 +7,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Modal, Pagination, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import "./index.css";
 import { StyleAllContent, StyleBody, StyleHeader, StylePhotoCheck } from './style';
 
 type Props = {};
@@ -36,6 +37,8 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const [isEdit, setIsEdit] = useState(false)
 
   const [wonderfulIds, setWonderfulIds] = useState<Array<string>>([])
+
+  const [videoDialog, setVideoDialog] = useState(false)
 
 
   const screenHeight = window.screen.availHeight
@@ -123,7 +126,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
           :
           (
             <>
-              <Button className="build" type="primary">
+              <Button className="build" type="primary" onClick={() => {setVideoDialog(true)}}>
                 生成
               </Button>
               <Button className="cancel" onClick={() => {setIsEdit(false)}}>
@@ -208,6 +211,22 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         onChange={(page) => setCurrent(page)}
         total={totalPgaes}
       />
+      <Modal
+        centered
+        destroyOnClose
+        width={900}
+        visible={videoDialog}
+        onCancel={() => {setVideoDialog(false)}}
+        title="生成视频"
+        wrapClassName="videoBox"
+      >
+        <video 
+          src={"http://oss-album.oss-cn-beijing.aliyuncs.com/wonderfulTime.mp4"}
+          controls
+        >
+
+        </video>
+        </Modal>
     </StyleAllContent>
   ) : (
     <span>404 not found</span>

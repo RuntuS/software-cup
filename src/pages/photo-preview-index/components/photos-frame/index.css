@@ -1,0 +1,5 @@
+.videoBox .ant-modal-body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
