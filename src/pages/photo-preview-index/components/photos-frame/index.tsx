@@ -1,5 +1,5 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
-import { Photo as IPhoto, requestPhotos } from '@/axios/photo';
+import { Photo as IPhoto, requestAllPhotos, requestPhotos } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
 import { Photo } from '@/components/photo';
@@ -27,7 +27,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const isAlbum = !urlObj.search
 
-  console.log(urlObj.search)
 
   const [vis, setVis] = useState(false)
   const [choosedId, setChoosedId] = useState('')
@@ -42,7 +41,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const screenHeight = window.screen.availHeight
 
 
-  console.log(wonderfulIds)
 
   const [albums, setAlbums] = useState<Array<IAlbum>>([])
   const [photos, setPhotos] = useState<Array<IPhoto>>([])
@@ -52,7 +50,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     // hard code
     requestAlbum('2018091609025',currentParam , true)
       .then(res => {
-        console.log('res', res)
         setAlbums(res)
 
       })
@@ -65,24 +62,39 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     const key = urlObj.search.split('=')[1]
     requestPhotos('2018091609025', key, current, 10)
       .then(res => {
-        console.log(res)
-        setPhotos(res)
+        setTotalPages(res.total)
+        setPhotos(res.imgList)
       })
       .catch(err => {
         console.error(err)
       })
   },[current, urlObj.search])
 
+  const requestPhotoAllLocal = useCallback(() => {
+    requestAllPhotos('2018091609025', current, 10)
+    .then(res => {
+      console.log('total', res.imgList )
+      setTotalPages(res.total)
+      setPhotos(res.imgList)
+    })
+    .catch(err => {
+      console.error(err)
+    })
+  },[current])
+
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
 
   useEffect(() => {
-    if(isAlbum){
+    if(title === '全部照片'){
+      requestPhotoAllLocal()
+    }
+    else if(isAlbum){
       requestAlbumLocal()
     } else {
       requestPhotosLocal()
     }
-  }, [isAlbum, requestAlbumLocal, requestPhotosLocal])
+  }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title])
 
   return title ? (
     <StyleAllContent>
@@ -137,7 +149,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       </Modal>
       <StyleBody>
         {
-          isAlbum ? 
+          isAlbum && params.current !== 'all-photo' ? 
             albums.map(item => (
               <Album
                 id={item.title}
@@ -163,7 +175,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
                     disabled={!isEdit}
                     id={item.fileId}
                     onChange={(e) => {
-                      console.log(e.target)
                       if(e.target.checked) {
                         setWonderfulIds((pre) => {
                           const arr = [...pre]

@@ -16,7 +16,10 @@ export type DetailPhoto = {
     categories: Array<string>
 }
 
-export const requestPhotos = async (userId: string, item: string, curPage: number, pageSize: number): Promise<Array<Photo>> => {
+export const requestPhotos = async (userId: string, item: string, curPage: number, pageSize: number): Promise<{
+    total: number,
+    imgList: Array<Photo>
+}> => {
     const response = await axios({
         method: 'GET',
         url: `http://47.108.85.69:8081/photo/getImgList?userId=${userId}&item=${item}&curPage=${curPage}&pageSize=${pageSize}`
@@ -31,5 +34,16 @@ export const requestDetail = async (userId: string, id: string, isAlbum: boolean
         url: `http://47.108.85.69:8081/photo/getPhotoInfo?userId=${userId}&id=${id}&isAlbum=${isAlbum}`
     })
 
+    return response.data.data
+}
+
+export const requestAllPhotos = async (userId: string, curPage:number, pageSize: number): Promise<{
+    total: number,
+    imgList: Array<Photo>
+}> => {
+    const response = await axios({
+        method: 'GET',
+        url: `http://47.108.85.69:8081/photo/getAllImg?userId=${userId}&curPage=${curPage}&pageSize=${pageSize}`
+    })
     return response.data.data
 }
