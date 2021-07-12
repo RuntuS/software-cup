@@ -38,6 +38,11 @@ export const StyleHeader = Style.div`
         margin-left: 24px;
         margin-right: 36px;
     }
+
+    .backTitle {
+        display: flex;
+        align-items: center;
+    }
 `;
 
 export const StyleBody = Style.div`

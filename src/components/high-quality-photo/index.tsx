@@ -56,7 +56,7 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
                 </div>
                 <div className={'tag'}>
                     {detail.categories.map(item => (
-                        <Tag color="cyan">{item}</Tag>
+                        <Tag color="cyan" className={'tagItem'}>{item}</Tag>
                     ))}
                 </div>
                 

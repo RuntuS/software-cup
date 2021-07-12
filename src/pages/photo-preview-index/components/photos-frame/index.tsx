@@ -1,12 +1,12 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
-import { Photo as IPhoto, requestAllPhotos, requestPhotos, requestWonderful } from '@/axios/photo';
+import { deletePhoto, Photo as IPhoto, requestAllPhotos, requestPhotos, requestWonderful } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
 import { Photo } from '@/components/photo';
-import { UploadOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Modal, Pagination, Upload } from 'antd';
+import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Checkbox, message, Modal, Pagination, Spin, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import "./index.css";
 import { StyleAllContent, StyleBody, StyleHeader, StylePhotoCheck } from './style';
 
@@ -24,6 +24,7 @@ const PREVIEW_MAP: {
 export const PhotoFrame: React.FC<Props> = (props) => {
   const params: {current: string} = useParams();
   const urlObj = useLocation();
+  const history = useHistory()
 
 
   const isAlbum = !urlObj.search
@@ -41,6 +42,8 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const [videoDialog, setVideoDialog] = useState(false)
 
   const [wondefulUrl, setwondefulUrl] = useState("")
+
+  const [downloadLoading, setDownloadLoading] = useState(false)
 
 
   const screenHeight = window.screen.availHeight
@@ -62,6 +65,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         console.error(err)
       })
   },[params])
+
 
   const requestPhotosLocal = useCallback(() => {
     const key = urlObj.search.split('=')[1]
@@ -98,6 +102,16 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     })
   },[wonderfulIds])
 
+  const deletePhotoLocal = useCallback((fileId: string) => {
+    deletePhoto(fileId)
+    .then(res => {
+      message.success('成功删除',1500)
+    })
+    .catch(err => {
+      message.warning("删除失败，请联系管理员", 1500)
+    })
+  }, [])
+
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
 
@@ -112,10 +126,21 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     }
   }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title])
 
+
   return title ? (
     <StyleAllContent>
       <StyleHeader>
-        <span>{title}</span>
+        <span className={"backTitle"}>
+          {
+            !isAlbum &&
+            (<Button
+            icon={<LeftOutlined />}
+            onClick={() => {history.go(-1)}}
+            type='link'
+           />)
+          }
+          {title}
+        </span>
         <div className="btnBox">
           {
           !isEdit ?
@@ -133,7 +158,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             </Upload>
             <Button
               className="buildNewCut"
-              onClick={() => {setIsEdit(true)}}
+              onClick={() => {setDownloadLoading(true);setIsEdit(true)}}
             >
               生成精彩剪辑
             </Button>
@@ -159,7 +184,12 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         onCancel={() => {setVis(false)}}
         onOk={() => {setVis(false)}}
         centered
+        cancelText="删除"
+        cancelButtonProps={{
+          onClick: () => {setVis(false); deletePhotoLocal(choosedId) }
+        }}
         title="详细"
+        okText="关闭"
       >
         <HighQualityPhoto
           id={choosedId}
@@ -235,12 +265,15 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         title="生成视频"
         wrapClassName="videoBox"
       >
-        <video 
-          src={wondefulUrl}
-          controls
-        >
-
-        </video>
+        {
+          downloadLoading ?
+          <Spin />
+          :
+          <video 
+            src={wondefulUrl}
+            controls
+          />
+        }
         </Modal>
     </StyleAllContent>
   ) : (

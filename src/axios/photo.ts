@@ -63,3 +63,14 @@ export const requestWonderful = async (file : Array<string>): Promise<{
     })
     return response.data
 }
+
+export const deletePhoto = async (fileId: string): Promise<{
+    data: string
+}> => {
+    const response = await axios({
+        method: 'get',
+        url: `http://47.108.85.69:8081/photo/deletePhotoInfo?fileId=${fileId}`
+    })
+
+    return response.data.data
+}

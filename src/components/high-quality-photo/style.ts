@@ -30,5 +30,9 @@ export const StyleHighQualityImage = Style.div`
 
     .tag {
         margin-top: 12px;
+
+        .tagItem {
+            margin-top: 12px;
+        }
     }
 `
