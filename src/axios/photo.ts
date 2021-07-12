@@ -47,3 +47,19 @@ export const requestAllPhotos = async (userId: string, curPage:number, pageSize:
     })
     return response.data.data
 }
+
+export const requestWonderful = async (file : Array<string>): Promise<{
+    url: string,
+}> => {
+    const response = await axios({
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        url: `http://localhost:23333/generateVideo`,
+        data:{
+            "file":file
+        }
+    })
+    return response.data
+}

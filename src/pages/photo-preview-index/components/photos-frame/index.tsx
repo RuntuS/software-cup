@@ -1,5 +1,5 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
-import { Photo as IPhoto, requestAllPhotos, requestPhotos } from '@/axios/photo';
+import { Photo as IPhoto, requestAllPhotos, requestPhotos, requestWonderful } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
 import { Photo } from '@/components/photo';
@@ -39,6 +39,8 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const [wonderfulIds, setWonderfulIds] = useState<Array<string>>([])
 
   const [videoDialog, setVideoDialog] = useState(false)
+
+  const [wondefulUrl, setwondefulUrl] = useState("")
 
 
   const screenHeight = window.screen.availHeight
@@ -85,6 +87,17 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     })
   },[current])
 
+  const local_requestWonderful = useCallback(() => {
+    requestWonderful(wonderfulIds)
+    .then(res => {
+      console.log('url', res.url )
+      setwondefulUrl(res.url)
+    })
+    .catch(err => {
+      console.error(err)
+    })
+  },[wonderfulIds])
+
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
 
@@ -110,6 +123,8 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             <Upload
               className="upload"
               multiple
+              data = {{userId:"2018091609025"}}
+              action = "http://localhost:8081/oss/postfile"
               // action -> 上传地址
             >
               <Button icon={<UploadOutlined />}>
@@ -126,7 +141,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
           :
           (
             <>
-              <Button className="build" type="primary" onClick={() => {setVideoDialog(true)}}>
+              <Button className="build" type="primary" onClick={() => {setVideoDialog(true);local_requestWonderful()}}>
                 生成
               </Button>
               <Button className="cancel" onClick={() => {setIsEdit(false)}}>
@@ -176,7 +191,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
                 (
                   <Checkbox
                     disabled={!isEdit}
-                    id={item.fileId}
+                    id={item.imgUrl}
                     onChange={(e) => {
                       if(e.target.checked) {
                         setWonderfulIds((pre) => {
@@ -216,12 +231,12 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         destroyOnClose
         width={900}
         visible={videoDialog}
-        onCancel={() => {setVideoDialog(false)}}
+        onCancel={() => {setVideoDialog(false);setwondefulUrl("")}}
         title="生成视频"
         wrapClassName="videoBox"
       >
         <video 
-          src={"http://oss-album.oss-cn-beijing.aliyuncs.com/wonderfulTime.mp4"}
+          src={wondefulUrl}
           controls
         >
 
