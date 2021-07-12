@@ -82,7 +82,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const requestPhotoAllLocal = useCallback(() => {
     requestAllPhotos('2018091609025', current, 10)
     .then(res => {
-      console.log('total', res.imgList )
       setTotalPages(res.total)
       setPhotos(res.imgList)
     })
@@ -105,10 +104,10 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const deletePhotoLocal = useCallback((fileId: string) => {
     deletePhoto(fileId)
     .then(res => {
-      message.success('成功删除',1500)
+      message.success('成功删除',1)
     })
     .catch(err => {
-      message.warning("删除失败，请联系管理员", 1500)
+      message.warning("删除失败，请联系管理员", 1)
     })
   }, [])
 
