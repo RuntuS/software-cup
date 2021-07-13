@@ -138,7 +138,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             type='link'
            />)
           }
-          {title}
+          {title} {!isAlbum && ` - ${urlObj.search.split('=')[1]}`}
         </span>
         <div className="btnBox">
           {
@@ -151,11 +151,12 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               action = "http://localhost:8081/oss/postfile"
               // action -> 上传地址
             >
-              <Button icon={<UploadOutlined />}>
+              <Button icon={<UploadOutlined />} disabled={isAlbum}>
                 上传图片
               </Button>
             </Upload>
             <Button
+              disabled={isAlbum}
               className="buildNewCut"
               onClick={() => {setDownloadLoading(true);setIsEdit(true)}}
             >
