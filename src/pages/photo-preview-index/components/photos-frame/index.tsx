@@ -151,7 +151,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               className="upload"
               multiple
               data = {{userId:"2018091609025"}}
-              action = "http://localhost:8081/oss/postfile"
+              action = "http://36.133.57.158:8081/oss/postfile"
               // action -> 上传地址
             >
               <Button icon={<UploadOutlined />}>

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import { Axios as axios } from './config'
 
 export type Photo = {
     imgUrl: string;
@@ -22,7 +22,7 @@ export const requestPhotos = async (userId: string, item: string, curPage: numbe
 }> => {
     const response = await axios({
         method: 'GET',
-        url: `http://47.108.85.69:8081/photo/getImgList?userId=${userId}&item=${item}&curPage=${curPage}&pageSize=${pageSize}`
+        url: `/photo/getImgList?userId=${userId}&item=${item}&curPage=${curPage}&pageSize=${pageSize}`
     })
 
     return response.data.data
@@ -31,7 +31,7 @@ export const requestPhotos = async (userId: string, item: string, curPage: numbe
 export const requestDetail = async (userId: string, id: string, isAlbum: boolean): Promise<DetailPhoto> => {
     const response = await axios({
         method: 'GET',
-        url: `http://47.108.85.69:8081/photo/getPhotoInfo?userId=${userId}&id=${id}&isAlbum=${isAlbum}`
+        url: `/photo/getPhotoInfo?userId=${userId}&id=${id}&isAlbum=${isAlbum}`
     })
 
     return response.data.data
@@ -43,7 +43,7 @@ export const requestAllPhotos = async (userId: string, curPage:number, pageSize:
 }> => {
     const response = await axios({
         method: 'GET',
-        url: `http://47.108.85.69:8081/photo/getAllImg?userId=${userId}&curPage=${curPage}&pageSize=${pageSize}`
+        url: `/photo/getAllImg?userId=${userId}&curPage=${curPage}&pageSize=${pageSize}`
     })
     return response.data.data
 }
@@ -56,7 +56,7 @@ export const requestWonderful = async (file : Array<string>): Promise<{
         headers: {
             'Content-Type': 'application/json;charset=utf-8'
         },
-        url: `http://localhost:23333/generateVideo`,
+        url: `http://36.133.57.158:23333/generateVideo`,
         data:{
             "file":file
         }
@@ -69,7 +69,7 @@ export const deletePhoto = async (fileId: string): Promise<{
 }> => {
     const response = await axios({
         method: 'get',
-        url: `http://47.108.85.69:8081/photo/deletePhotoInfo?fileId=${fileId}`
+        url: `/photo/deletePhotoInfo?fileId=${fileId}`
     })
 
     return response.data.data
