@@ -28,7 +28,7 @@ export const Login: React.FC<Props> = (props) => {
     const {run: passwordInput} = useDebounceFn((password: string) => {
         setPassword(password)
     }, {
-        wait: 500
+        wait: 100
     })
 
     const loginLocal = useCallback(() => {
