@@ -17,8 +17,9 @@ const PREVIEW_MAP: {
 } = {
   'all-photo': '全部照片',
   recent: '最近图片',
-  "0": '事务',
+  "0": '事物',
   "1": '风景',
+  "2": '人像',
 };
 
 export const PhotoFrame: React.FC<Props> = (props) => {
@@ -82,6 +83,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   const requestPhotoAllLocal = useCallback(() => {
     requestAllPhotos('2018091609025', current, 10)
     .then(res => {
+      console.log(res.total)
       setTotalPages(res.total)
       setPhotos(res.imgList)
     })
@@ -95,6 +97,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     .then(res => {
       console.log('url', res.url )
       setwondefulUrl(res.url)
+      setDownloadLoading(false)
     })
     .catch(err => {
       console.error(err)
@@ -151,12 +154,11 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               action = "http://localhost:8081/oss/postfile"
               // action -> 上传地址
             >
-              <Button icon={<UploadOutlined />} disabled={isAlbum}>
+              <Button icon={<UploadOutlined />}>
                 上传图片
               </Button>
             </Upload>
             <Button
-              disabled={isAlbum}
               className="buildNewCut"
               onClick={() => {setDownloadLoading(true);setIsEdit(true)}}
             >
