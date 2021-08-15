@@ -1,7 +1,7 @@
 import { DetailPhoto, requestDetail } from '@/axios/photo'
-import { Image, Tag } from 'antd'
+import { Image, Spin, Tag } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleHighQualityImage } from './style'
+import { StyleHighQualityImage, StyleLoadingBox } from './style'
 
 type Props = {
     id: string,
@@ -9,8 +9,8 @@ type Props = {
 
 export const HighQualityPhoto: React.FC<Props> = (props) => {
     const { id } = props;
-
-    console.log(id)
+    
+    const [loading, setLoading] = useState(false)
 
 
     const [detail, setDetail] = useState<DetailPhoto>({
@@ -23,9 +23,11 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
         categories: []
     })
     const requestDetailLocal = useCallback(() => {
+        setLoading(true)
         requestDetail('2018091609025',id,false)
         .then(res => {
             setDetail(res)
+            setLoading(false)
         })
         .catch(err => {
             console.error(err)
@@ -36,31 +38,39 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
         requestDetailLocal()
     }, [requestDetailLocal])
 
-    console.log(detail)
 
 
     return (
-        <StyleHighQualityImage>
-            <div>
-                <Image 
-                    src={detail.imgUrl}
-                    className={"image"}
-                    alt="预览"
-                />
-            </div>
-            <div className={'descrption'}>
-                <div className={"title"}>{detail.title}</div>
-                <div className={'uploadTime'}>
-                    <span>上传时间: </span>
-                    <span>{detail.uploadTime}</span>
+        <>
+            {
+            loading ? 
+            <StyleLoadingBox>
+                <Spin />
+            </StyleLoadingBox>
+            :   
+            (<StyleHighQualityImage key={id}>
+                <div>
+                    <Image 
+                        src={detail.imgUrl}
+                        className={"image"}
+                        alt="预览"
+                    />
                 </div>
-                <div className={'tag'}>
-                    {detail.categories.map(item => (
-                        <Tag color="cyan" className={'tagItem'}>{item}</Tag>
-                    ))}
+                <div className={'descrption'}>
+                    <div className={"title"}>{detail.title}</div>
+                    <div className={'uploadTime'}>
+                        <span>上传时间: </span>
+                        <span>{detail.uploadTime}</span>
+                    </div>
+                    <div className={'tag'}>
+                        {detail.categories.map(item => (
+                            <Tag color="cyan" className={'tagItem'}>{item}</Tag>
+                        ))}
+                    </div>
                 </div>
-                
-            </div>
-        </StyleHighQualityImage>
+            </StyleHighQualityImage>)}
+
+        </>
+
     )
 }
