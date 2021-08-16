@@ -34,6 +34,6 @@ jobs:
         SSH_PRIVATE_KEY : ${{secrets.SOFT_WARE}} 
         ARGS: "-rltgoDzvO --delete"
         SOURCE: "/"
-        REMOTE_HOST: "SOFT_WARE"
+        REMOTE_HOST: "36.133.57.158"
         REMOTE_USER: "root"
         TARGET: "/root/frontend"
