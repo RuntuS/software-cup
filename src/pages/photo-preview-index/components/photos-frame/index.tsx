@@ -117,9 +117,9 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     })
   },[wonderfulIds])
 
-  const deletePhotoLocal = useCallback((fileId: string) => {
+  const deletePhotoLocal = useCallback((fileId: string, imgUrl ?: string) => {
     setConfirmDeleteLoading(true)
-    deletePhoto(fileId)
+    deletePhoto(fileId, imgUrl)
     .then(res => {
       message.success('成功删除',1)
       setConfirmDeleteLoading(false)
@@ -318,7 +318,8 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         okText="删除"
         okButtonProps={{
           onClick: () => {
-            deletePhotoLocal(choosedId);
+            let imgUrl = photos.filter(item => item.fileId === choosedId)[0].imgUrl
+            deletePhotoLocal(choosedId, imgUrl);
           },
           loading: confirmDeleteLoading
         }}
