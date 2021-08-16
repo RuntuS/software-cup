@@ -64,12 +64,16 @@ export const requestWonderful = async (file : Array<string>): Promise<{
     return response.data
 }
 
-export const deletePhoto = async (fileId: string): Promise<{
+export const deletePhoto = async (fileId: string, imgUrl?: string): Promise<{
     data: string
 }> => {
     const response = await axios({
         method: 'get',
-        url: `/photo/deletePhotoInfo?fileId=${fileId}`
+        url: `/photo/deletePhotoInfo`,
+        params: {
+            fileId,
+            imgUrl
+        }
     })
 
     return response.data.data

@@ -7,7 +7,7 @@ export const login = async (account: string, password: string): Promise<{data: s
         url: `/user/login?userId=${account}&password=${password}`
     })
 
-    if(response.data.code != 200){
+    if(response.data.code !== 200){
         throw new Error('密码错误')
     }
     
