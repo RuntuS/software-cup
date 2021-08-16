@@ -1,6 +1,5 @@
-import React from 'react'
-import { useCallback } from 'react'
-import { useHistory, useParams, useLocation } from 'react-router-dom'
+import React, { useCallback } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
 import { StyleImageBox } from './style'
 
 type Props = {

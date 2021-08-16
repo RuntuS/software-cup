@@ -2,7 +2,7 @@ import { DashBoard } from '@/components/dashboard';
 import { Sidebar } from '@/components/sidebar';
 import { FolderAddOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { PhotoFrame } from './components/photos-frame';
 import './index.css';
@@ -11,7 +11,6 @@ import { StyleBody, StyleHeader } from './style';
 type Props = {};
 
 export const PhotoPreview: React.FC<Props> = (props) => {
-  const [displayKey, setDisplayKey] = useState('allPhoto');
   const history = useHistory();
 
   let screenHeight = document.body.scrollHeight;
@@ -26,7 +25,6 @@ export const PhotoPreview: React.FC<Props> = (props) => {
           <Sidebar
             className="sideBar"
             onChoose={(e) => {
-              setDisplayKey(e);
               history.push(`/index/${e}`);
             }}
           />

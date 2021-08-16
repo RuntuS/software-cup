@@ -1,5 +1,5 @@
+import { Avatar } from 'antd';
 import React from 'react';
-import { Avatar, Button } from 'antd';
 import { StyleAuthenInfoBox } from './style';
 
 type Props = {
