@@ -3,6 +3,7 @@ import icon from '@/images/icon.png';
 import { PageHeader } from 'antd';
 import React from 'react';
 import { AuthenInfo } from './components/authen';
+import { InputSearch } from './components/input-search';
 import { NotAuthen } from './components/not-authen';
 import './index.css';
 
@@ -20,7 +21,12 @@ export const DashBoard: React.FC<Props> = (props) => {
         avatar={{ src: icon }}
         extra={[
           isAuthen ? (
-            <AuthenInfo avatarSrc={avatar} name="Runtu" />
+            <div className="header-back">
+              <InputSearch
+                className="search"
+              />
+              <AuthenInfo avatarSrc={avatar} name="Runtu" />
+            </div>
           ) : (
             <NotAuthen />
           ),

@@ -1,14 +1,17 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
-import { deletePhoto, Photo as IPhoto, requestAllPhotos, requestPhotos, requestWonderful } from '@/axios/photo';
+import { deletePhoto, Photo as IPhoto, requestAllPhotos, requestBySearchPhoto, requestPhotos, requestWonderful } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
 import { Photo } from '@/components/photo';
+import { searchValue } from '@/recoils/searchState';
+import { NotFound } from '@/svgs/notFound';
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, message, Modal, Pagination, Spin, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import "./index.css";
-import { StyleAllContent, StyleBody, StyleHeader, StylePhotoCheck } from './style';
+import { StyleAllContent, StyleBody, StyleHeader, StyleNotFound, StylePhotoCheck } from './style';
 
 type Props = {};
 
@@ -21,6 +24,8 @@ const PREVIEW_MAP: {
   "1": '风景',
   "2": '人像',
 };
+
+const TEST_ACCOUNT = '2018091609025'
 
 export const PhotoFrame: React.FC<Props> = (props) => {
   const params: {current: string} = useParams();
@@ -56,7 +61,35 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const [refreshToken, setRefreshToken] = useState(1)
 
-  // 请求相册
+  // top-bar search value
+  const [search] = useRecoilState(searchValue)
+
+
+  // keyword search photo
+  const requestBySearch = useCallback((searchValue: string) => {
+    setImagesLoading(true)
+    requestBySearchPhoto(searchValue, current, 10, TEST_ACCOUNT)
+      .then(res => {
+        console.log('res', res)
+        if(res){
+          setPhotos(res.imgList)
+          setTotalPages(res.total)
+        } else {
+          // no search result
+          setPhotos([])
+          setTotalPages(1)
+          setCurrent(1)
+        }
+        setTimeout(() => {
+          setImagesLoading(false)
+        })
+      })
+      .catch(err => {
+        console.error('搜索接口异常，请联系管理员')
+      })
+  }, [current])
+
+  // Albums-request
   const requestAlbumLocal = useCallback(() => {
     setImagesLoading(true)
     const currentParam = params ? params.current : '0'
@@ -64,7 +97,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     requestAlbum('2018091609025',currentParam , true)
       .then(res => {
         setAlbums(res)
-        console.log('res', res)
         setImagesLoading(false)
       })
       .catch(err => {
@@ -72,14 +104,13 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       })
   },[params])
 
-// 请求相册中图片
+// photos-request
   const requestPhotosLocal = useCallback(() => {
     setImagesLoading(true)
     const key = urlObj.search.split('=')[1]
-    requestPhotos('2018091609025', key, current, 10)
+    requestPhotos(TEST_ACCOUNT, key, current, 10)
       .then(res => {
         setTotalPages(res.total)
-        console.log('分页数', res.total)
         setPhotos(res.imgList)
         setImagesLoading(false)
       })
@@ -88,9 +119,10 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       })
   },[current, urlObj.search])
 
+  // all-photo request
   const requestPhotoAllLocal = useCallback((pageNum: number ,isRecent ?: boolean) => {
     setImagesLoading(true)
-    requestAllPhotos('2018091609025', current, pageNum)
+    requestAllPhotos(TEST_ACCOUNT, current, pageNum)
     .then(res => {
       if (isRecent){
         // 最近上传只展示一页
@@ -117,6 +149,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     })
   },[wonderfulIds])
 
+  // delete photo
   const deletePhotoLocal = useCallback((fileId: string, imgUrl ?: string) => {
     setConfirmDeleteLoading(true)
     deletePhoto(fileId, imgUrl)
@@ -135,11 +168,15 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
-
   const directDisplayPhoto = params.current === 'recent' || params.current === 'all-photo'
 
+  console.log('search', search)
+
   useEffect(() => {
-    if(title === '全部照片'){
+    if(search){
+      requestBySearch(search)
+    }
+    else if(title === '全部照片'){
       requestPhotoAllLocal(10, false)
     }
     else if (title === '最近图片'){
@@ -150,7 +187,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     } else {
       requestPhotosLocal()
     }
-  }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title, refreshToken])
+  }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title, refreshToken, search, requestBySearch])
 
 
   return title ? (
@@ -222,7 +259,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               />
             ))
           :
-          photos.map(item => (
+          (photos.length !== 0 ? photos.map(item => (
             <StylePhotoCheck key={item.fileId}>
               <Photo
                 id={item.fileId}
@@ -260,9 +297,16 @@ export const PhotoFrame: React.FC<Props> = (props) => {
                   >选择</Checkbox>
                 )
               }
-            </StylePhotoCheck>
+            </StylePhotoCheck>)
 
-          )))
+          )
+          :
+          <StyleNotFound>
+            <NotFound className={'notFound'} />
+            <p>没找到对应图片</p>
+          </StyleNotFound>
+        )
+        )
         }
       </StyleBody>
       <Pagination
