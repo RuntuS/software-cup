@@ -78,3 +78,21 @@ export const deletePhoto = async (fileId: string, imgUrl?: string): Promise<{
 
     return response.data.data
 }
+
+export const requestBySearchPhoto = async (keyWord: string, curPage: number, pageSize: number, userId: string): Promise<{
+    total: number,
+    imgList: Array<Photo>
+}> => {
+    const response = await axios({
+        method: 'get',
+        url: '/photo/vagueSearch',
+        params: {
+            keyWord,
+            curPage,
+            pageSize,
+            userId
+        }
+    })
+    
+    return response.data.data
+}

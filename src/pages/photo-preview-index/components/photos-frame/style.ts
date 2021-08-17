@@ -67,6 +67,22 @@ export const StylePhotoCheck = Style.div`
     align-items: center;
 `
 
-export const StyleDeleteConfirmTitle = Style.div`
 
+export const StyleNotFound = Style.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 400px;
+
+    .notFound {
+        width: 200px;
+        height: 200px;
+    }
+
+    p {
+        color: rgb(227, 242, 250);
+        font-size: 20px;
+    }
 `

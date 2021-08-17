@@ -21,7 +21,7 @@ export const Sidebar: React.FC<Props> = (props: Props) => {
           onChoose(obj.key);
         }}
         defaultOpenKeys={['photo', 'albumTitle']}
-        defaultSelectedKeys={params ? [params.current] : ['']}
+        selectedKeys={params ? [params.current] : ['']}
       >
         <SubMenu key="photo" title="照片">
           <Item key="all-photo">全部照片</Item>
