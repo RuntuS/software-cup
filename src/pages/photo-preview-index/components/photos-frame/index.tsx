@@ -70,7 +70,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     setImagesLoading(true)
     requestBySearchPhoto(searchValue, current, 10, TEST_ACCOUNT)
       .then(res => {
-        console.log('res', res)
         if(res){
           setPhotos(res.imgList)
           setTotalPages(res.total)
@@ -169,8 +168,6 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   // @ts-ignore
   const title = params ? PREVIEW_MAP[params.current] : '';
   const directDisplayPhoto = params.current === 'recent' || params.current === 'all-photo'
-
-  console.log('search', search)
 
   useEffect(() => {
     if(search){
