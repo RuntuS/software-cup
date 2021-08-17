@@ -13,7 +13,6 @@ import './App.css';
 // TODO 登录状态的判断在这里进行
 function App() {
   const userToken = window.sessionStorage.getItem('user')
-  console.log('userToken', userToken)
 
   // 关于未登录重定向这部分代码先写死，后期设置中间件来进行拦截
   return (
