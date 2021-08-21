@@ -25,7 +25,7 @@ export const Photo: React.FC<Props> = (props) => {
         >
             <figure className={'imghvr-push-up imgBox'}>
                 <img src={url} alt="图片加载失败，请重试"/>
-                <figcaption>
+                <figcaption className="desc">
                     {desc}
                 </figcaption>
             </figure>

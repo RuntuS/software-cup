@@ -20,5 +20,13 @@ export const StylePhotoBox = Style.div`
         cursor: pointer;
     }
 
+    .desc {
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
+
+
+
 
 `
