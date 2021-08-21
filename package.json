@@ -18,6 +18,7 @@
     "ahooks": "^2.10.8",
     "antd": "^4.16.2",
     "axios": "^0.21.1",
+    "filerobot-image-editor": "^3.12.17",
     "history": "^5.0.0",
     "lint": "^0.7.0",
     "npm-check-updates": "^11.8.3",
