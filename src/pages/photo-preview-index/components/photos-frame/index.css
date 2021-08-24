@@ -3,3 +3,28 @@
     align-items: center;
     justify-content: center;
 }
+
+.video-attr {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 80%;
+}
+
+.title-set {
+    display: flex;
+    flex-direction: column;
+}
+
+.music-set {
+    display: flex;
+    flex-direction: column;
+}
+
+.select {
+    width: 200px;
+}
+
+.sub-title {
+    margin-bottom: 4px;
+}
