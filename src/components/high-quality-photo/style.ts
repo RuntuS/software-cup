@@ -18,6 +18,7 @@ export const StyleHighQualityImage = Style.div`
 
 
     .descrption {
+        position: relative;
         margin-left: 12px;
         dispaly: flex;
         flex-direction: column;
@@ -33,6 +34,19 @@ export const StyleHighQualityImage = Style.div`
 
         .tagItem {
             margin-top: 12px;
+        }
+    }
+
+    .PS {
+        position: absolute;
+        bottom: 5px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+
+        img {
+            width: 100%;
+            height: 100%;
         }
     }
 `
