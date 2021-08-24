@@ -1,5 +1,6 @@
 import { DetailPhoto, requestDetail } from '@/axios/photo'
-import { Image, Spin, Tag } from 'antd'
+import psSrc from '@/images/Ps.png'
+import { Image, Spin, Tag, Tooltip } from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { StyleHighQualityImage, StyleLoadingBox } from './style'
 
@@ -39,6 +40,13 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
     }, [requestDetailLocal])
 
 
+    const  turnPs = useCallback(() => {
+        // @ts-ignore
+        const ImageEditor = new FilerobotImageEditor();
+        ImageEditor.open(detail.imgUrl)
+    }, [detail.imgUrl])
+
+
 
     return (
         <>
@@ -67,6 +75,11 @@ export const HighQualityPhoto: React.FC<Props> = (props) => {
                             <Tag color="cyan" className={'tagItem'}>{item}</Tag>
                         ))}
                     </div>
+                    <Tooltip title="图片编辑" placement="right">
+                        <div className={'PS'} onClick={turnPs}>
+                            <img  src={psSrc} alt="PS图标"/>
+                        </div>
+                    </Tooltip>
                 </div>
             </StyleHighQualityImage>)}
 
