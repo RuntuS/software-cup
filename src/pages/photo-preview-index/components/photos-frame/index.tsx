@@ -1,4 +1,5 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
+import { Music, requestMusicList } from '@/axios/music';
 import { deletePhoto, Photo as IPhoto, requestAllPhotos, requestBySearchPhoto, requestPhotos, requestWonderful } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
@@ -6,7 +7,8 @@ import { Photo } from '@/components/photo';
 import { searchValue } from '@/recoils/searchState';
 import { NotFound } from '@/svgs/notFound';
 import { LeftOutlined, UploadOutlined } from '@ant-design/icons';
-import { Alert, Button, Checkbox, message, Modal, Pagination, Spin, Upload } from 'antd';
+import { useDebounceFn } from 'ahooks';
+import { Alert, Button, Checkbox, Input, message, Modal, Pagination, Select, Spin, Upload } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
@@ -14,6 +16,8 @@ import "./index.css";
 import { StyleAllContent, StyleBody, StyleHeader, StyleNotFound, StylePhotoCheck } from './style';
 
 type Props = {};
+
+const { Option } = Select;
 
 const PREVIEW_MAP: {
   [key: string]: string;
@@ -58,12 +62,30 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const [albums, setAlbums] = useState<Array<IAlbum>>([])
   const [photos, setPhotos] = useState<Array<IPhoto>>([])
+  const [musics, setMusics] = useState<Array<Music>>([])
+
+  // 精彩剪辑标题
+  const [videoTitle, setVideoTitle] = useState('')
+  const [music, setMusic] = useState('')
+
+  /* 
+    判断生成视频弹窗目前是编辑态还是生成态。 
+    true -> 编辑态
+    false -> 生成态
+    第一次进入都是编辑态
+  */
+  const [videoIsEdit, setVideoIsEdit] = useState(true)
+
+  const {run : onMusicTitleChange} = useDebounceFn((title: string) => {
+    setVideoTitle(title)
+  }, {
+    wait: 100
+  })
 
   const [refreshToken, setRefreshToken] = useState(1)
 
   // top-bar search value
   const [search] = useRecoilState(searchValue)
-
 
   // keyword search photo
   const requestBySearch = useCallback((searchValue: string) => {
@@ -103,6 +125,18 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       })
   },[params])
 
+
+  // 请求音乐
+  const requestMusicLocal = useCallback(() => {
+    requestMusicList()
+    .then(res => {
+      setMusics(res)
+    })
+    .catch(err => {
+      console.error('出现错误，请联系管理员')
+    })
+  }, [])
+
 // photos-request
   const requestPhotosLocal = useCallback(() => {
     setImagesLoading(true)
@@ -136,17 +170,22 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       console.error(err)
     })
   },[current])
+  
 
+  // 精彩剪辑生成
   const local_requestWonderful = useCallback(() => {
-    requestWonderful(wonderfulIds)
+    setDownloadLoading(true)
+    requestWonderful(wonderfulIds, videoTitle, music)
     .then(res => {
-      setwondefulUrl(res.url)
-      setDownloadLoading(false)
+      setwondefulUrl(res.url + '')
+      setTimeout(() => {
+        setDownloadLoading(false)
+      }, 1000)
     })
     .catch(err => {
       console.error(err)
     })
-  },[wonderfulIds])
+  },[music, videoTitle, wonderfulIds])
 
   // delete photo
   const deletePhotoLocal = useCallback((fileId: string, imgUrl ?: string) => {
@@ -186,6 +225,9 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     }
   }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title, refreshToken, search, requestBySearch])
 
+  useEffect(() => {
+    requestMusicLocal()
+  }, [requestMusicLocal])
 
   return title ? (
     <StyleAllContent>
@@ -231,10 +273,10 @@ export const PhotoFrame: React.FC<Props> = (props) => {
           :
           (
             <>
-              <Button className="build" type="primary" onClick={() => {setVideoDialog(true);local_requestWonderful()}}>
+              <Button className="build" type="primary" onClick={() => {setVideoDialog(true);}}>
                 生成
               </Button>
-              <Button className="cancel" onClick={() => {setIsEdit(false)}}>
+              <Button className="cancel" onClick={() => {setIsEdit(false); setWonderfulIds([])}}>
                 取消
               </Button>
             </>
@@ -271,6 +313,13 @@ export const PhotoFrame: React.FC<Props> = (props) => {
                   <Checkbox
                     disabled={!isEdit}
                     id={item.imgUrl}
+                    defaultChecked={(() => {
+                      if(wonderfulIds.find(itemLocal => itemLocal === item.imgUrl)){
+                        return true
+                      } else {
+                        return false
+                      }
+                    })()}
                     onChange={(e) => {
                       if(e.target.checked) {
                         setWonderfulIds((pre) => {
@@ -315,21 +364,66 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       {/* the modal about video */}
       <Modal
         centered
-        destroyOnClose
+        destroyOnClose={true}
+        closable={false}
         width={900}
         visible={videoDialog}
         onCancel={() => {setVideoDialog(false);setwondefulUrl("")}}
-        title="生成视频"
+        title={videoIsEdit ? '生成视频': videoTitle}
         wrapClassName="videoBox"
+        okButtonProps={{
+          onClick: () => {
+            // 编辑态
+            if(videoIsEdit){
+              // 生成视频请求
+              local_requestWonderful();
+              // 转为生成态
+              setVideoIsEdit(false)
+            } else {
+              // 关闭弹窗
+              setVideoDialog(false)
+              setVideoIsEdit(true)
+            }
+          }
+        }}
+        okText="确认"
+        cancelText="取消"
+        afterClose={() => {
+          setVideoIsEdit(true)
+          setVideoDialog(false)
+        }}
+        
       >
-        {
-          downloadLoading ?
-          <Spin />
+        {videoIsEdit ? 
+          (<div className="video-attr">
+            <div className="title-set">
+              <span className="sub-title">标题</span>
+              <Input placeholder="请输入精彩剪辑标题" onChange={(e) => {onMusicTitleChange(e.target.value)}} />
+            </div>
+            <div className="music-set">
+              <span className="sub-title">背景音乐</span>
+              <Select onChange={(e) => setMusic(e as string)} value={music} className="select">
+                {
+                  musics.map(item => (
+                    <Option value={item.id}>
+                      {item.title}
+                    </Option>
+                  ))
+                }
+              </Select>
+            </div>
+          </div>)
           :
-          <video 
-            src={wondefulUrl}
-            controls
-          />
+          (
+            downloadLoading ?
+            <Spin />
+            :
+            <video 
+              controls
+            >
+              <source src={wondefulUrl} type={'video/mp4'}></source>
+            </video>
+          )
         }
         </Modal>
         {/* the modal about high quality image */}
