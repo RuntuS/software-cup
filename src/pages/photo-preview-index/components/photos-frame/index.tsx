@@ -1,4 +1,5 @@
 import { Album as IAlbum, requestAlbum } from '@/axios/album';
+import { Music, requestMusicList } from '@/axios/music';
 import { deletePhoto, Photo as IPhoto, requestAllPhotos, requestBySearchPhoto, requestPhotos, requestWonderful } from '@/axios/photo';
 import { Album } from '@/components/album';
 import { HighQualityPhoto } from '@/components/high-quality-photo';
@@ -61,6 +62,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
 
   const [albums, setAlbums] = useState<Array<IAlbum>>([])
   const [photos, setPhotos] = useState<Array<IPhoto>>([])
+  const [musics, setMusics] = useState<Array<Music>>([])
 
   // 精彩剪辑标题
   const [videoTitle, setVideoTitle] = useState('')
@@ -123,6 +125,18 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       })
   },[params])
 
+
+  // 请求音乐
+  const requestMusicLocal = useCallback(() => {
+    requestMusicList()
+    .then(res => {
+      setMusics(res)
+    })
+    .catch(err => {
+      console.error('出现错误，请联系管理员')
+    })
+  }, [])
+
 // photos-request
   const requestPhotosLocal = useCallback(() => {
     setImagesLoading(true)
@@ -156,18 +170,22 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       console.error(err)
     })
   },[current])
+  
 
   // 精彩剪辑生成
   const local_requestWonderful = useCallback(() => {
-    requestWonderful(wonderfulIds)
+    setDownloadLoading(true)
+    requestWonderful(wonderfulIds, videoTitle, music)
     .then(res => {
-      setwondefulUrl(res.url)
-      setDownloadLoading(false)
+      setwondefulUrl(res.url + '')
+      setTimeout(() => {
+        setDownloadLoading(false)
+      }, 1000)
     })
     .catch(err => {
       console.error(err)
     })
-  },[wonderfulIds])
+  },[music, videoTitle, wonderfulIds])
 
   // delete photo
   const deletePhotoLocal = useCallback((fileId: string, imgUrl ?: string) => {
@@ -207,7 +225,9 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     }
   }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title, refreshToken, search, requestBySearch])
 
-  console.log(wonderfulIds)
+  useEffect(() => {
+    requestMusicLocal()
+  }, [requestMusicLocal])
 
   return title ? (
     <StyleAllContent>
@@ -344,11 +364,12 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       {/* the modal about video */}
       <Modal
         centered
-        destroyOnClose
+        destroyOnClose={true}
+        closable={false}
         width={900}
         visible={videoDialog}
         onCancel={() => {setVideoDialog(false);setwondefulUrl("")}}
-        title="生成视频"
+        title={videoIsEdit ? '生成视频': videoTitle}
         wrapClassName="videoBox"
         okButtonProps={{
           onClick: () => {
@@ -367,6 +388,11 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         }}
         okText="确认"
         cancelText="取消"
+        afterClose={() => {
+          setVideoIsEdit(true)
+          setVideoDialog(false)
+        }}
+        
       >
         {videoIsEdit ? 
           (<div className="video-attr">
@@ -376,10 +402,14 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             </div>
             <div className="music-set">
               <span className="sub-title">背景音乐</span>
-              <Select onChange={(e) => setMusic(e as string)} defaultValue="123" className="select">
-                <Option value="123">
-                  音乐s
-                </Option>
+              <Select onChange={(e) => setMusic(e as string)} value={music} className="select">
+                {
+                  musics.map(item => (
+                    <Option value={item.id}>
+                      {item.title}
+                    </Option>
+                  ))
+                }
               </Select>
             </div>
           </div>)
@@ -389,9 +419,10 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             <Spin />
             :
             <video 
-              src={wondefulUrl}
               controls
-            />
+            >
+              <source src={wondefulUrl} type={'video/mp4'}></source>
+            </video>
           )
         }
         </Modal>

@@ -48,7 +48,7 @@ export const requestAllPhotos = async (userId: string, curPage:number, pageSize:
     return response.data.data
 }
 
-export const requestWonderful = async (file : Array<string>): Promise<{
+export const requestWonderful = async (file : Array<string>, title: string, musicId: string): Promise<{
     url: string,
 }> => {
     const response = await axios({
@@ -58,7 +58,9 @@ export const requestWonderful = async (file : Array<string>): Promise<{
         },
         url: `http://36.133.57.158:23333/generateVideo`,
         data:{
-            "file":file
+            file,
+            title,
+            musicId
         }
     })
     return response.data
