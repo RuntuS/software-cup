@@ -18,7 +18,6 @@ export const StyleHighQualityImage = Style.div`
 
 
     .descrption {
-        position: relative;
         margin-left: 12px;
         dispaly: flex;
         flex-direction: column;
@@ -39,7 +38,8 @@ export const StyleHighQualityImage = Style.div`
 
     .PS {
         position: absolute;
-        bottom: 5px;
+        bottom: 12px;
+        left: 24px;
         cursor: pointer;
         width: 30px;
         height: 30px;
