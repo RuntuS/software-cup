@@ -29,6 +29,8 @@ const PREVIEW_MAP: {
   "2": '人像',
 };
 
+const TOAST_LOADING_KEY = 1
+const TOAST_SUCCESS_KEY = 2
 const TEST_ACCOUNT = '2018091609025'
 
 export const PhotoFrame: React.FC<Props> = (props) => {
@@ -225,9 +227,17 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     }
   }, [isAlbum, requestAlbumLocal, requestPhotoAllLocal, requestPhotosLocal, title, refreshToken, search, requestBySearch])
 
+  const uploadingDuration = {
+    hideDuration: () => {},
+    begin: function(){
+      this.hideDuration = message.loading({content: '正在上传中', key: TOAST_LOADING_KEY, duration: 0})
+    }
+  }
+
   useEffect(() => {
     requestMusicLocal()
   }, [requestMusicLocal])
+
 
   return title ? (
     <StyleAllContent>
@@ -235,11 +245,13 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         <span className={"backTitle"}>
           {
             !isAlbum &&
-            (<Button
-            icon={<LeftOutlined />}
-            onClick={() => {history.go(-1)}}
-            type='link'
-           />)
+            (
+              <Button
+                icon={<LeftOutlined />}
+                onClick={() => {history.go(-1)}}
+                type='link'
+              />
+           )
           }
           {title} {!isAlbum && ` - ${urlObj.search.split('=')[1]}`}
         </span>
@@ -251,12 +263,28 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               className="upload"
               multiple
               onChange={(event) => {
-                if(event.file.status === 'done') {
-                  setRefreshToken((pre) => pre + 1)
+                // 这个地方上传完毕
+                if(event.file.status === 'done' || event.file.status === 'error'){
+                  const hasOver = (() => event.fileList.every(item => item.status === 'done' || item.status === 'error' || item.status === 'success'))()
+                  if (hasOver) {
+                    setRefreshToken(pre => pre + 1);
+                    uploadingDuration.hideDuration()
+                    message.success({
+                      content: '上传成功',
+                      key: TOAST_SUCCESS_KEY
+                    })
+                  }
                 }
+
               }}
               data = {{userId:"2018091609025"}}
               action = "http://36.133.57.158:8081/oss/postfile"
+              showUploadList={false}
+              maxCount = {15}
+              beforeUpload={() => {
+                uploadingDuration.begin()
+              }}
+              progress={{showInfo: true, strokeWidth: 20}}
               // action -> 上传地址
             >
               <Button icon={<UploadOutlined />}>

@@ -28,3 +28,7 @@
 .sub-title {
     margin-bottom: 4px;
 }
+
+.upload {
+    position: relative;
+}
