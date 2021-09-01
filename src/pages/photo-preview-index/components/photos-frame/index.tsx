@@ -12,6 +12,7 @@ import { Alert, Button, Checkbox, Input, message, Modal, Pagination, Select, Spi
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
+import axios from 'axios'
 import "./index.css";
 import { StyleAllContent, StyleBody, StyleHeader, StyleNotFound, StylePhotoCheck } from './style';
 
@@ -131,7 +132,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
   },[params])
 
 
-  // 请求音乐
+  // 请求音乐 
   const requestMusicLocal = useCallback(() => {
     requestMusicList()
     .then(res => {
@@ -411,13 +412,25 @@ export const PhotoFrame: React.FC<Props> = (props) => {
               // 转为生成态
               setVideoIsEdit(false)
             } else {
-              // 关闭弹窗
-              setVideoDialog(false)
-              setVideoIsEdit(true)
+                axios.get(wondefulUrl, {responseType: "blob"})
+                  .then(res => {
+                    const export_blob = new Blob([res.data])
+                    const urlObject = window.URL || window.webkitURL || window;
+                    const a = document.createElement('a')
+                    a.href = urlObject.createObjectURL(export_blob)
+                    a.download = `${videoTitle}.mp4`;
+                    a.click()
+                    setTimeout(() => {
+                      a.remove()
+                      setVideoDialog(false)
+                      setVideoIsEdit(true)
+                    })
+                    message.loading('正在下载',0.3)
+                  })
             }
           }
         }}
-        okText="确认"
+        okText={videoIsEdit ? '确认' : '下载'}
         cancelText="取消"
         afterClose={() => {
           setVideoIsEdit(true)
@@ -449,11 +462,13 @@ export const PhotoFrame: React.FC<Props> = (props) => {
             downloadLoading ?
             <Spin />
             :
-            <video 
-              controls
-            >
-              <source src={wondefulUrl} type={'video/mp4'}></source>
-            </video>
+            <div className="video-box">
+              <video 
+                controls
+              >
+                <source src={wondefulUrl} type={'video/mp4'}></source>
+              </video>
+            </div>
           )
         }
         </Modal>
