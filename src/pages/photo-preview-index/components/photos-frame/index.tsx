@@ -120,6 +120,9 @@ export const PhotoFrame: React.FC<Props> = (props) => {
     requestAlbum('2018091609025',currentParam , true)
       .then(res => {
         setAlbums(res)
+        // hard code -> Album paging max : 1
+        setTotalPages(1)
+        setCurrent(1)
         setImagesLoading(false)
       })
       .catch(err => {
