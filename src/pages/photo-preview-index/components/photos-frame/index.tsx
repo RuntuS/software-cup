@@ -219,10 +219,12 @@ export const PhotoFrame: React.FC<Props> = (props) => {
       requestBySearch(search)
     }
     else if(title === '全部照片'){
-      requestPhotoAllLocal(10, false)
+      // 为了演示布局，暂时调整为12个
+      requestPhotoAllLocal(12, false)
     }
     else if (title === '最近图片'){
-      requestPhotoAllLocal(15, true)
+      // 同理如上
+      requestPhotoAllLocal(12, true)
     }
     else if(isAlbum){
       requestAlbumLocal()
