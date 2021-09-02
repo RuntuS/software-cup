@@ -394,6 +394,7 @@ export const PhotoFrame: React.FC<Props> = (props) => {
         current={current}
         onChange={(page) => setCurrent(page)}
         total={totalPgaes * 10}
+        showSizeChanger={false}
       />
       {/* the modal about video */}
       <Modal
